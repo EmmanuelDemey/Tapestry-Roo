@@ -7,6 +7,7 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.springframework.roo.project.Dependency;
+import org.springframework.roo.project.MavenOperations;
 import org.springframework.roo.project.ProjectOperations;
 import org.springframework.roo.project.Property;
 import org.springframework.roo.support.util.XmlUtils;
@@ -18,16 +19,19 @@ import org.w3c.dom.Element;
 public class TapestryOperationsImpl implements TapestryOperations {
 	
 	@Reference private ProjectOperations projectOperation;
+	@Reference private MavenOperations mavenOperation;
 	
 	public boolean isCreateTapestryApplicationAvailable() {
 		return !(isTapestryDependencyAvailable() && isTapestryStructureAvailable());
 	}
 	
 	public boolean isTapestryStructureAvailable() {
+		//TODO
 		return false;
 	}
 	
 	public boolean isTapestryDependencyAvailable() {
+		//TODO
 		return false;
 	}
 
@@ -46,7 +50,7 @@ public class TapestryOperationsImpl implements TapestryOperations {
 	
 	private void createTapestryStructure(String name){
 		
-		//TODO create Tapestry folders
+		//TODO create Tapestry folders src/main/java and resources, pages, services, components and mixins packages
 		if(isTapestryStructureAvailable()) return;
 		
 		//TODO create AppModule with an contributeApplicationDefaults method, PRODUCTION_MODE to true
