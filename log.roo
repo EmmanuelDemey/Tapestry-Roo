@@ -1,0 +1,10 @@
+// Spring Roo 1.1.5.RELEASE [rev d3a68c3] log opened at 2011-12-25 17:08:16
+addon create simple --topLevelPackage org.got5.roo --projectName tapestry5roo --description "Spring Roo addon for Tapestry5"
+exit
+// Spring Roo 1.1.5.RELEASE [rev d3a68c3] log closed at 2011-12-25 17:09:35
+// Spring Roo 1.1.5.RELEASE [rev d3a68c3] log opened at 2011-12-25 18:32:37
+perform assembly
+perform assembly
+perform assembly
+exit
+// Spring Roo 1.1.5.RELEASE [rev d3a68c3] log closed at 2011-12-25 18:37:06

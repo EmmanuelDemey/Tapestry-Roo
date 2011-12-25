@@ -1,0 +1,11 @@
+<configuration>
+	<maven>
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.tapestry</groupId>
+				<artifactId>tapestry-core</artifactId>
+				<version>${tapestry.version}</version>
+			</dependency>
+		</dependencies>
+	</maven>
+</configuration>
