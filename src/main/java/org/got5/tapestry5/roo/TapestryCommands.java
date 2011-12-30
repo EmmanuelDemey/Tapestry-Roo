@@ -1,7 +1,6 @@
 package org.got5.tapestry5.roo;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.felix.scr.annotations.Component;
