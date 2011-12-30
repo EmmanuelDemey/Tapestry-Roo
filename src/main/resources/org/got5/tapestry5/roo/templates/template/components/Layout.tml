@@ -1,14 +1,27 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" xmlns:p="tapestry:parameter">
+<head>
+</head>
 	
-	<head>
-		<title>${message:title}</title>
-	</head>
-	
-	<body>
-		<div id="main">
-			<t:body />
+<body>
+	<div class="wrapper bs"> 
+		<ul class="nav">
+		</ul>
+		<div id="top">
+			<h1><img src="${asset:context:static/img/tapestry.png}" /></h1>
+			<div class="clearer"></div>
+		</div>
+		<div id="bar">
+			<strong>Spring Roo Application</strong>
+		</div>
+		<div id="wrapper">
+			<div id="menu">
+				
+			</div>
+			<div id="main">
+				<t:body />
+			</div>
 		</div>	
-	</body>
+	</div>
+</body>
 
 </html>

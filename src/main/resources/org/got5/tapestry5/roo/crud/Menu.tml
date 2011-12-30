@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" xmlns:p="tapestry:parameter">
+	
+	<t:loop t:source="data" t:value="row">
+		<div class="menu_item">
+			<h3>${title}</h3>
+			<ul>
+				<li><a t:type="pageLink" t:page="${edit}">Create new ${link}</a></li>
+				<li><a t:type="pageLink" t:page="${display}">List all ${link}s</a></li>
+			</ul>
+		</div>
+	</t:loop>
+	
+</t:container>
