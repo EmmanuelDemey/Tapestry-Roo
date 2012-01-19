@@ -19,7 +19,6 @@ public class TapestryCommands implements CommandMarker {
 	private Logger log = Logger.getLogger(getClass().getName());
 
 	@Reference private TapestryOperations operations; 
-	@Reference private TapestryReparse reparse;
 	
 	protected void activate(ComponentContext context) {
 	}
@@ -55,13 +54,4 @@ public class TapestryCommands implements CommandMarker {
 		operations.createTapestryApplication(name, version, dependencies, override);
 		
 	}
-	
-	/*@CliCommand(value = "tapestry crud")
-	public void generateCrud() {
-		
-		log.info("Create Tapestry CRUD");
-		
-		operations.createCrud();
-		
-	}*/
 }

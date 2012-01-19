@@ -8,6 +8,4 @@ public interface TapestryOperations {
 
 	void createTapestryApplication(String name, String version, Map<String, Boolean> dependencies, boolean override);
 	
-	void createCrud();
-	
 }
