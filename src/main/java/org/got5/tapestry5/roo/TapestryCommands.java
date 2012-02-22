@@ -7,6 +7,7 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.osgi.service.component.ComponentContext;
+import org.springframework.roo.model.JavaType;
 import org.springframework.roo.shell.CliAvailabilityIndicator;
 import org.springframework.roo.shell.CliCommand;
 import org.springframework.roo.shell.CliOption;
@@ -53,5 +54,37 @@ public class TapestryCommands implements CommandMarker {
 		
 		operations.createTapestryApplication(name, version, dependencies, override);
 		
+	}
+	
+	@CliAvailabilityIndicator("tapestry create page")
+	public boolean isTapestryCreatePage() {
+		return operations.isTapestryCreatePageAvailable(); 
+	}
+	
+	@CliCommand(value = "tapestry create page")
+	public void createTapestryPage(
+		@CliOption(key = "name", mandatory = true, help = "Name of the page to create") String name, 
+		@CliOption(key = "subpackage", mandatory = false, help = "The subpackage of the pages package where the page will be created") String subpackage,
+		@CliOption(key = "parentPage", mandatory = false, help = "Name of the page that must be extended") JavaType parentPageClass){
+	
+		operations.createTapestryPage(name, subpackage, parentPageClass);
+	}
+	
+	@CliCommand(value = "tapestry create component")
+	public void createTapestryComponent(
+		@CliOption(key = "name", mandatory = true, help = "Name of the component to create") String name, 
+		@CliOption(key = "subpackage", mandatory = false, help = "The subpackage of the components package where the component will be created") String subpackage,
+		@CliOption(key = "parentComponent", mandatory = false, help = "Name of the component that must be extended") JavaType parentComponentClass){
+	
+		operations.createTapestryComponent(name, subpackage, parentComponentClass);
+	}
+	
+	@CliCommand(value = "tapestry create mixin")
+	public void createTapestryMixin(
+		@CliOption(key = "name", mandatory = true, help = "Name of the mixin to create") String name, 
+		@CliOption(key = "subpackage", mandatory = false, help = "The subpackage of the mixins package where the mixin will be created") String subpackage,
+		@CliOption(key = "parentMixin", mandatory = false, help = "Name of the mixin that must be extended") JavaType parentMixinClass){
+	
+		operations.createTapestryMixin(name, subpackage, parentMixinClass);
 	}
 }

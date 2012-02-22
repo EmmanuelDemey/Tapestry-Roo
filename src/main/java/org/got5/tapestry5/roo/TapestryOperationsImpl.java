@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
@@ -14,6 +16,7 @@ import org.springframework.roo.classpath.PhysicalTypeCategory;
 import org.springframework.roo.classpath.PhysicalTypeIdentifier;
 import org.springframework.roo.classpath.TypeLocationService;
 import org.springframework.roo.classpath.TypeManagementService;
+import org.springframework.roo.classpath.details.ClassOrInterfaceTypeDetails;
 import org.springframework.roo.classpath.details.ClassOrInterfaceTypeDetailsBuilder;
 import org.springframework.roo.classpath.details.ImportMetadataBuilder;
 import org.springframework.roo.classpath.details.MethodMetadataBuilder;
@@ -28,13 +31,13 @@ import org.springframework.roo.model.DataType;
 import org.springframework.roo.model.JavaPackage;
 import org.springframework.roo.model.JavaSymbolName;
 import org.springframework.roo.model.JavaType;
+import org.springframework.roo.process.manager.FileManager;
 import org.springframework.roo.project.Dependency;
 import org.springframework.roo.project.LogicalPath;
 import org.springframework.roo.project.Path;
 import org.springframework.roo.project.PathResolver;
 import org.springframework.roo.project.ProjectOperations;
 import org.springframework.roo.project.Property;
-import org.springframework.roo.support.util.Assert;
 import org.springframework.roo.support.util.WebXmlUtils;
 import org.springframework.roo.support.util.WebXmlUtils.WebXmlParam;
 import org.springframework.roo.support.util.XmlUtils;
@@ -48,14 +51,27 @@ import org.w3c.dom.Element;
 @Component
 @Service
 public class TapestryOperationsImpl extends AbstractOperations implements TapestryOperations {
+	
 	private static final JavaType[] SETUP_PARAMETERS = {new JavaType("org.apache.tapestry5.ioc.MappedConfiguration", 0, DataType.TYPE, null, Arrays.asList(JavaType.STRING,JavaType.STRING))};
 	private Logger log = Logger.getLogger(getClass().getName());
+	
 	@Reference private ProjectOperations projectOperation;
 	@Reference private PathResolver pathResolver;
 	@Reference private TypeManagementService typeManagementService;
+	@Reference private TypeLocationService typeLocationService;
+	
+	//Commands availability related methods
 	
 	public boolean isCreateTapestryApplicationAvailable() {
+		return this.isProjectAvailable();
+	}
+	
+	public boolean isProjectAvailable() {
 		return projectOperation.isProjectAvailable(projectOperation.getFocusedModuleName());
+	}
+
+	public boolean isTapestryCreatePageAvailable() {
+		return isProjectAvailable();
 	}
 	
 	public boolean isTapestryDependencyAvailable() {
@@ -84,20 +100,21 @@ public class TapestryOperationsImpl extends AbstractOperations implements Tapest
 	 */
 	private void createTapestryStructure(String name){
 		
-		Assert.notNull(name, "Your Tapestry Application should have a name.");
-		
-		createWebApp();
-		createJavaPackage();
-		createResourcesPackage();
-		
-		createLayoutComponent();
-		
-		createAppModule(name);
-		
-		createAppProperties(name);
-		
-		createOrUpdateWebXml(name);
-		
+		if(null == name){
+			log.log(Level.SEVERE, "Your Tapestry Application should have a name.");	
+		}else{
+			createWebApp();
+			createJavaPackage();
+			createResourcesPackage();
+			
+			createLayoutComponent();
+			
+			createAppModule(name);
+			
+			createAppProperties(name);
+			
+			createOrUpdateWebXml(name);
+		}
 	}
 	
 	private void createLayoutComponent(){
@@ -152,7 +169,7 @@ public class TapestryOperationsImpl extends AbstractOperations implements Tapest
 	}
 	
 	private void createAppProperties(String name){
-		final String appenginePath = projectOperation .getPathResolver().getFocusedIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF/"+name.toLowerCase()+".properties");
+		final String appenginePath = projectOperation .getPathResolver().getFocusedIdentifier(Path.SRC_MAIN_RESOURCES, "WEB-INF/"+name.toLowerCase()+".properties");
 		
 		final boolean appenginePathExists = fileManager.exists(appenginePath);
 		
@@ -257,4 +274,93 @@ public class TapestryOperationsImpl extends AbstractOperations implements Tapest
 		String topPackage = projectOperation.getFocusedTopLevelPackage().getFullyQualifiedPackageName();
 		return topPackage.replace(".", "/")+"/"+path;
 	}
+
+	public void createTapestryPage(String name, String subpackage,
+			JavaType parentPage) {
+
+		createTapestryObject(name, subpackage, parentPage,TapestryObjectType.PAGE);
+		
+	}
+
+	public void createTapestryComponent(String name, String subpackage,
+			JavaType parentComponent) {
+		createTapestryObject(name, subpackage, parentComponent,TapestryObjectType.COMPONENT);
+	}
+	
+	public void createTapestryMixin(String name, String subpackage,
+			JavaType parentComponent) {
+		createTapestryObject(name, subpackage, parentComponent,TapestryObjectType.MIXIN);
+	}
+	
+	private void createTapestryObject(String name, String subpackage,
+			JavaType parentObject,TapestryObjectType type) {
+		//Java class creation
+		int modifier = Modifier.PUBLIC;
+				
+		
+		String objectFullName;
+		String typePackage = null;
+		
+		switch (type) {
+		case PAGE:
+			typePackage = "pages";
+			break;
+		case COMPONENT:
+			typePackage = "components";
+			break;
+		case MIXIN:
+			typePackage = "mixins";
+			break;
+		}
+		
+		
+		if (StringUtils.isNotEmpty(subpackage)) {
+			objectFullName = projectOperation.getFocusedTopLevelPackage()+"."+typePackage+"."+subpackage+"."+StringUtils.capitalize(name);
+		}else{
+			//if no subpackage provided, page is created in the default one
+			objectFullName = projectOperation.getFocusedTopLevelPackage()+"."+typePackage+"."+StringUtils.capitalize(name);
+		}
+		
+		log.info("Prepare following "+type+" full path : "+objectFullName);
+		
+		
+		final String declaredByMetadataId = PhysicalTypeIdentifier.createIdentifier(new JavaType(objectFullName), pathResolver.getFocusedPath(Path.SRC_MAIN_JAVA));
+		final ClassOrInterfaceTypeDetailsBuilder cidBuilder = new ClassOrInterfaceTypeDetailsBuilder(declaredByMetadataId, modifier, new JavaType(objectFullName), PhysicalTypeCategory.CLASS) ;
+
+		//The inheritance is managed here
+		if (parentObject != null) {
+			cidBuilder.addExtendsTypes(parentObject);
+		}
+		
+		//Class creation
+		typeManagementService.createOrUpdateTypeOnDisk(cidBuilder.build());
+		
+		log.info("Java class creation done");
+		
+		//As mixins doens't have related templates, they will skip the following code 
+		if (!TapestryObjectType.MIXIN.equals(type)) {
+			//Related template file creation 
+			String templatePath = StringUtils.replace(objectFullName, ".", "/");
+			
+			final String templateFullPath = projectOperation.getPathResolver().getFocusedIdentifier(Path.SRC_MAIN_RESOURCES, templatePath+".tml");
+			
+			//We must check if the template doesn't already exist
+			final boolean templateFullPathExists = fileManager.exists(templateFullPath);
+			
+			if (!templateFullPathExists) {
+				//template is created
+				fileManager.createFile(templateFullPath);
+				
+				boolean isCreationSuccessful = fileManager.exists(templateFullPath);
+				if (isCreationSuccessful) {
+					log.info("Template creation done");
+				}else{
+					log.info("Template creation failed");
+				}
+			}else{
+				log.info("Template file already exists, no creation");
+			}
+		}
+	}
+
 }
