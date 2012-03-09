@@ -16,7 +16,6 @@ import org.springframework.roo.classpath.PhysicalTypeCategory;
 import org.springframework.roo.classpath.PhysicalTypeIdentifier;
 import org.springframework.roo.classpath.TypeLocationService;
 import org.springframework.roo.classpath.TypeManagementService;
-import org.springframework.roo.classpath.details.ClassOrInterfaceTypeDetails;
 import org.springframework.roo.classpath.details.ClassOrInterfaceTypeDetailsBuilder;
 import org.springframework.roo.classpath.details.ImportMetadataBuilder;
 import org.springframework.roo.classpath.details.MethodMetadataBuilder;
@@ -31,7 +30,6 @@ import org.springframework.roo.model.DataType;
 import org.springframework.roo.model.JavaPackage;
 import org.springframework.roo.model.JavaSymbolName;
 import org.springframework.roo.model.JavaType;
-import org.springframework.roo.process.manager.FileManager;
 import org.springframework.roo.project.Dependency;
 import org.springframework.roo.project.LogicalPath;
 import org.springframework.roo.project.Path;
@@ -87,9 +85,9 @@ public class TapestryOperationsImpl extends AbstractOperations implements Tapest
 	/**
 	 * TODO
 	 */
-	public void createTapestryApplication(String name, String version, Map<String, Boolean> dependencies, boolean override) 
+	public void createTapestryApplication(String name, String version, Map<String, Boolean> dependencies) 
 	{
-		addTapestryDependency(version, dependencies, override);
+		addTapestryDependency(version, dependencies);
 		
 		createTapestryStructure(name);
 	}
@@ -109,6 +107,8 @@ public class TapestryOperationsImpl extends AbstractOperations implements Tapest
 			
 			createLayoutComponent();
 			
+			createIndexPage();
+			
 			createAppModule(name);
 			
 			createAppProperties(name);
@@ -117,6 +117,15 @@ public class TapestryOperationsImpl extends AbstractOperations implements Tapest
 		}
 	}
 	
+	private void createIndexPage() {
+		int modifier = Modifier.PUBLIC;
+		
+		final String declaredByMetadataId = PhysicalTypeIdentifier.createIdentifier(new JavaType(projectOperation.getFocusedTopLevelPackage()+".pages.Index"), pathResolver.getFocusedPath(Path.SRC_MAIN_JAVA));
+		final ClassOrInterfaceTypeDetailsBuilder cidBuilder = new ClassOrInterfaceTypeDetailsBuilder(declaredByMetadataId, modifier, new JavaType(projectOperation.getFocusedTopLevelPackage()+".pages.Index"), PhysicalTypeCategory.CLASS) ;
+		
+		typeManagementService.createOrUpdateTypeOnDisk(cidBuilder.build());
+	}
+
 	private void createLayoutComponent(){
 		
 		List<AnnotationAttributeValue<?>> config = new ArrayList<AnnotationAttributeValue<?>>();
@@ -242,7 +251,7 @@ public class TapestryOperationsImpl extends AbstractOperations implements Tapest
 	 * TODO
 	 * @param version
 	 */
-	private void addTapestryDependency(String version,Map<String, Boolean> dep, boolean override){
+	private void addTapestryDependency(String version,Map<String, Boolean> dep){
 		
 		log.info("Adding Tapestry Dependencies");
 		
@@ -350,6 +359,7 @@ public class TapestryOperationsImpl extends AbstractOperations implements Tapest
 			if (!templateFullPathExists) {
 				//template is created
 				fileManager.createFile(templateFullPath);
+				fileManager.createOrUpdateTextFileIfRequired(templateFullPath, TapestryUtils.createEmptyTemplateContent(), false);
 				
 				boolean isCreationSuccessful = fileManager.exists(templateFullPath);
 				if (isCreationSuccessful) {

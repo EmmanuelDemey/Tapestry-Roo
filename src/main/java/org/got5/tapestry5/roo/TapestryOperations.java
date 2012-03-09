@@ -8,7 +8,7 @@ public interface TapestryOperations {
 	
 	boolean isCreateTapestryApplicationAvailable();
 
-	void createTapestryApplication(String name, String version, Map<String, Boolean> dependencies, boolean override);
+	void createTapestryApplication(String name, String version, Map<String, Boolean> dependencies);
 	
 	void createTapestryPage(String name, String subpackage, JavaType parentPage);
 

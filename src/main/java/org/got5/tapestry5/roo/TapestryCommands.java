@@ -40,8 +40,7 @@ public class TapestryCommands implements CommandMarker {
 		@CliOption(key = "withTapestryTest", mandatory = false, help = "Include Tapestry5-test", unspecifiedDefaultValue="false", specifiedDefaultValue = "true") Boolean t5test, 
 		@CliOption(key = "withTapestrySpring", mandatory = false, help = "Include Tapestry5-spring", unspecifiedDefaultValue="false", specifiedDefaultValue = "true") Boolean t5spring, 
 		@CliOption(key = "withTapestryHibernate", mandatory = false, help = "Include Tapestry5-hibernate", unspecifiedDefaultValue="false", specifiedDefaultValue = "true") Boolean t5hibernate, 
-		@CliOption(key = "withTapestryJpa", mandatory = false, help = "Include Tapestry5-JPA", unspecifiedDefaultValue="false", specifiedDefaultValue = "true") Boolean t5jpa, 
-		@CliOption(key = "overridePom", mandatory = false, help = "Override the Spring Roo POM", unspecifiedDefaultValue="false", specifiedDefaultValue = "true") Boolean override) {
+		@CliOption(key = "withTapestryJpa", mandatory = false, help = "Include Tapestry5-JPA", unspecifiedDefaultValue="false", specifiedDefaultValue = "true") Boolean t5jpa) {
 		
 		log.info("Create Tapestry Structure for " + name);
 		
@@ -52,7 +51,7 @@ public class TapestryCommands implements CommandMarker {
 		dependencies.put("tapestry-hibernate", t5hibernate);
 		dependencies.put("tapestry-jpa", t5jpa);
 		
-		operations.createTapestryApplication(name, version, dependencies, override);
+		operations.createTapestryApplication(name, version, dependencies);
 		
 	}
 	

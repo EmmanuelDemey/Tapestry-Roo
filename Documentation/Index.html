@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Tapestry plugin for Spring Roo</title>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script type="text/javascript" src="toc.js"></script>
+		<script type="text/javascript" src="snippet.js"></script>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	
+	<body>
+		<div id="toc">
+			
+		</div>
+		
+		<div id="wrapper">
+			<h1>Commands</h1>
+			
+			<ul>
+				<li>tapestry setup</li>
+				<li>tapestry create page</li>
+				<li>tapestry create component</li>
+				<li>tapestry create mixin</li>
+			</ul>
+			
+			<h1>Problems</h1>
+			
+			<p>
+				After creatin you Tapestry Application with this plugin, 
+				you will have maybe 2 errors. 
+			</p>
+			<p>
+				First, you will have to add a depdency to your pom.xml : 
+			</p>
+			
+			<pre class="xmlCode">
+&lt;dependency&gt;
+        &lt;groupId&gt;org.springsource&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-tx&lt;/artifactId&gt;
+        &lt;version&gt;2.5.4&lt;/version&gt;
+&lt;/dependency&gt;
+			</pre>
+			
+			<p>
+				And the second thing is to run your application with -X option : mvn jetty:run -X
+			</p>
+		</div>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$('#toc').toc();
+			$("pre.xmlCode").snippet("xml",{style:"vim-dark"});
+		});
+		</script>
+	</body>
+</html>
